@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {FormBuilder} from '@angular/forms';
+import { passwordValidator } from './shared/password-validator';
+import { forbiddenNameValidator } from './shared/username-validator';
+
 
 @Component({
   selector: 'app-root',
@@ -8,20 +11,33 @@ import {FormBuilder} from '@angular/forms';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  Username:any; 
+  Password:any;
+  Confirmpassword:any;
+  City:any;
+  State:any;
+  Postalcode:any;
+  ages:number[]=[]
+  Age :any
 
+  constructor(private fb:FormBuilder){
+    for(let i=0;i<=100;i++){
+      this.ages.push(i)
+    }
+  }
 
-  constructor(private fb:FormBuilder){}
 
   registrationForm=this.fb.group({
-    username:['Harsha'],
-    password:[" "],
-    confirmpassword:[""],
+    username:["",[Validators.required,Validators.minLength(4),forbiddenNameValidator]],
+    password:["",[Validators.required,Validators.minLength(8)]],
+    confirmpassword:["",[Validators.required,Validators.minLength(8)]],
     address:this.fb.group({
       city:[''],
       state:[''],
       postalcode:['']
-    })
-  })
+    }),
+    age:["",[Validators.required]]
+  },{validators:passwordValidator});
 
   //verbose way to create new registration form(FormGroup), and fields to fill within it(FormControl)
   //we can even create nested FormGroups within FormGroups. Eg. address can be a formGroup within the larger entire Formgroup with
@@ -54,8 +70,8 @@ export class AppComponent {
   loadApiData(){
     this.registrationForm.patchValue({
       username:"Bruce Wayne",
-      // password: "batcave123",
-      // confirmpassword: "batcave123",
+      password: "batcave123",
+      confirmpassword: "batcave123",
       address:{
         city:"Gotham",
         state: "New Jersey",
@@ -64,6 +80,17 @@ export class AppComponent {
       }
 
     })
+  }
+
+  onSubmit(){
+    this.Username=this.registrationForm.value.username;
+    this.Password=this.registrationForm.value.password;
+    this.Confirmpassword=this.registrationForm.value.confirmpassword;
+    this.City=this.registrationForm.value.address?.city;
+    this.State=this.registrationForm.value.address?.state;
+    this.Postalcode=this.registrationForm.value.address?.postalcode;
+    this.Age=this.registrationForm.value.age;
+
   }
 
 }
